@@ -1,0 +1,15 @@
+---
+
+- name: create package dir
+  file: path={{ cert_dir }} state=directory
+
+- name: create csr
+  template: src={{ playbook_dir }}/templates/kubernetes-csr.json dest={{ cert_dir }}/kubernetes-csr.json
+
+- shell: cfssl gencert -initca {{ playbook_dir }}/templates/ca-csr.json | cfssljson -bare ca
+  args:
+    chdir: "{{ cert_dir }}"
+
+- shell: cfssl gencert -ca={{ ca }} -ca-key={{ ca_key }} -config={{ ca_config }} -profile=kubernetes {{ cert_dir }}/kubernetes-csr.json | cfssljson -bare kubernetes
+  args:
+    chdir: "{{ cert_dir }}"

@@ -1,0 +1,21 @@
+---
+
+- name: add docker key
+  shell: apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+- name: add docker repo
+  lineinfile: dest=/etc/apt/sources.list.d/docker.list line="deb https://apt.dockerproject.org/repo ubuntu-xenial main" create=yes
+
+- name: install docker
+  apt: name=docker-engine state=present update_cache=yes
+
+- template: src=templates/docker.service dest=/lib/systemd/system/docker.service
+
+- shell: systemctl daemon-reload
+- shell: systemctl enable docker
+- shell: systemctl stop docker.socket
+- shell: systemctl stop docker
+- shell: iptables -F
+- shell: iptables -X
+- shell: systemctl restart docker.socket
+- shell: systemctl restart docker

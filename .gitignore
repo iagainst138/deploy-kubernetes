@@ -1,0 +1,8 @@
+*.swp
+inventory
+packages/*
+certs/*
+_scratch/*
+*.retry
+test-setup.sh
+kubectl.sh

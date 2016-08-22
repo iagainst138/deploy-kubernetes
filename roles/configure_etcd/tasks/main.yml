@@ -1,0 +1,18 @@
+---
+
+- file: path=/etc/etcd state=directory
+- file: path=/var/lib/etcd state=directory
+
+- copy: src={{ cert_dir }}/ca.pem dest=/etc/etcd/ca.pem
+- copy: src={{ cert_dir }}/kubernetes-key.pem dest=/etc/etcd/kubernetes-key.pem
+- copy: src={{ cert_dir }}/kubernetes.pem dest=/etc/etcd/kubernetes.pem
+
+- copy: src={{ etcd_binary }} dest=/usr/bin/etcd mode=0755
+- copy: src={{ etcdctl_binary }} dest=/usr/bin/etcdctl mode=0755
+
+- template: src={{ playbook_dir}}/templates/etcd.service dest=/etc/systemd/system/etcd.service
+- shell: systemctl daemon-reload
+- shell: systemctl enable etcd
+- shell: systemctl restart etcd
+
+- shell: etcdctl --ca-file=/etc/etcd/ca.pem cluster-health

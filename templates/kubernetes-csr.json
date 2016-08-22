@@ -1,0 +1,21 @@
+{% set csr_hosts=['127.0.0.1'] %}
+{%- if csr_hosts.extend(groups.minion) %}{% endif -%}
+{%- if csr_hosts.extend(groups.master) %}{% endif -%}
+{%- if csr_hosts.extend(groups.etcd) %}{% endif -%}
+{
+  "CN": "kubernetes",
+  "hosts": {{ csr_hosts|to_json }},
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "Kubernetes",
+      "OU": "Cluster",
+      "ST": "Oregon"
+    }
+  ]
+}

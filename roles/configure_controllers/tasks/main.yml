@@ -1,0 +1,36 @@
+---
+
+- file: path=/var/lib/kubernetes state=directory
+
+- copy: src={{ cert_dir }}/ca.pem dest=/var/lib/kubernetes/ca.pem
+- copy: src={{ cert_dir }}/kubernetes-key.pem dest=/var/lib/kubernetes/kubernetes-key.pem
+- copy: src={{ cert_dir }}/kubernetes.pem dest=/var/lib/kubernetes/kubernetes.pem
+
+- copy: src={{ api_server_binary }} dest=/usr/bin/kube-apiserver mode=0755
+- copy: src={{ controller_manager_binary }} dest=/usr/bin/kube-controller-manager mode=0755
+- copy: src={{ scheduler_binary }} dest=/usr/bin/kube-scheduler mode=0755
+- copy: src={{ kubectl_binary }} dest=/usr/bin/kubectl mode=0755
+
+- copy: src=templates/token.csv dest=/var/lib/kubernetes/ mode=0644
+- copy: src=templates/authorization-policy.jsonl dest=/var/lib/kubernetes/ mode=0644
+
+- template: src=templates/kube-apiserver.service dest=/etc/systemd/system/kube-apiserver.service
+- template: src=templates/kube-controller-manager.service dest=/etc/systemd/system/kube-controller-manager.service
+- template: src=templates/kube-scheduler.service dest=/etc/systemd/system/kube-scheduler.service
+
+- shell: systemctl daemon-reload
+
+- shell: systemctl enable {{ item }}
+  with_items:
+     - kube-apiserver
+     - kube-controller-manager
+     - kube-scheduler
+
+- shell: systemctl restart {{ item }}
+  with_items:
+     - kube-apiserver
+     - kube-controller-manager
+     - kube-scheduler
+
+- name: verify setup
+  shell: (cd /var/lib/kubernetes && sleep 5;kubectl get componentstatuses)

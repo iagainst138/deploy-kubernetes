@@ -1,0 +1,29 @@
+---
+
+- file: path=/var/lib/kubernetes state=directory
+- file: path=/opt/cni state=directory
+- file: path=/var/lib/kubelet state=directory
+
+- template: src={{ playbook_dir}}/templates/kubeconfig.yml dest=/var/lib/kubelet/kubeconfig
+
+- copy: src={{ cert_dir }}/ca.pem dest=/var/lib/kubernetes/ca.pem
+- copy: src={{ cert_dir }}/kubernetes-key.pem dest=/var/lib/kubernetes/kubernetes-key.pem
+- copy: src={{ cert_dir }}/kubernetes.pem dest=/var/lib/kubernetes/kubernetes.pem
+
+- copy: src={{ kubectl_binary }} dest=/usr/bin/kubectl mode=0755
+- copy: src={{ kube_proxy_binary }} dest=/usr/bin/kube-proxy mode=0755
+- copy: src={{ kubelet_binary }} dest=/usr/bin/kubelet mode=0755
+
+- unarchive: src={{ cni_tarball }} dest=/opt/cni
+
+- template: src={{ playbook_dir}}/templates/kubelet.service dest=/etc/systemd/system/kubelet.service
+- shell: systemctl daemon-reload
+- shell: systemctl enable kubelet
+- shell: systemctl restart kubelet
+
+- template: src={{ playbook_dir}}/templates/kube-proxy.service dest=/etc/systemd/system/kube-proxy.service
+- shell: systemctl daemon-reload
+- shell: systemctl enable kube-proxy
+- shell: systemctl restart kube-proxy
+
+# TODO verify that services are running

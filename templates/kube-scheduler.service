@@ -1,0 +1,16 @@
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+# NOTE 6443 should be 8080: the load balancer ip
+
+[Service]
+ExecStart=/usr/bin/kube-scheduler \
+  --leader-elect=true \
+  --master=http://{{ ansible_default_ipv4.address }}:8080 \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

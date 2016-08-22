@@ -1,0 +1,76 @@
+---
+
+# Following this guide: https://github.com/kelseyhightower/kubernetes-the-hard-way
+
+- name: bootstrap installer
+  hosts: localhost
+  roles:
+    - get_kubernetes
+    - generate_certs
+
+
+- name: configure etcd nodes
+  hosts: etcd
+  roles:
+    - configure_etcd
+
+
+- name: install docker
+  hosts: minion
+  roles:
+    - install_docker
+
+
+- name: configure controllers
+  hosts: master
+  roles:
+    - configure_controllers
+
+
+- name: configure workers
+  hosts: minion
+  roles:
+    - configure_workers
+
+
+- name: configure kubectl access
+  hosts: localhost
+  tasks:
+    - template: src=templates/kubectl.sh dest={{ inventory_dir}}/kubectl.sh mode=0775
+    - shell: ./kubectl.sh
+
+
+- name: get routes
+  hosts: localhost
+  connection: local
+  tags: routes
+  tasks:
+    - routes:
+      register: routes_out
+
+
+- name: add routes
+  hosts: minion
+  tags: routes
+  tasks:
+    - add_routes: routes={{ hostvars['localhost']['routes_out']['routes'] }}
+
+
+# TODO verify DNS is working
+- name: configure DNS addon
+  hosts: localhost
+  tags: dns
+  tasks:
+    - shell: ./packages/kubectl delete -f templates/skydns-svc.yaml
+      ignore_errors: yes
+    - shell: ./packages/kubectl create -f templates/skydns-svc.yaml
+
+    - shell: ./packages/kubectl delete -f templates/skydns-rc.yaml
+      ignore_errors: yes
+    - shell: ./packages/kubectl create -f templates/skydns-rc.yaml
+
+
+- name: generate test script
+  hosts: localhost
+  tasks:
+    - template: src=templates/test-setup.sh dest={{ inventory_dir }}/test-setup.sh mode=0755

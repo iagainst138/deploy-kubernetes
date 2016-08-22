@@ -1,0 +1,34 @@
+---
+
+package_dir: "{{ inventory_dir }}/packages"
+cert_dir: "{{ inventory_dir }}/certs"
+
+etcd_binary: "{{ package_dir }}/etcd-v3.0.1-linux-amd64/etcd"
+etcdctl_binary: "{{ package_dir }}/etcd-v3.0.1-linux-amd64/etcdctl"
+
+csr: "{{ playbook_dir }}/templates/ca-csr.json"
+ca_key: "{{ cert_dir }}/ca-key.pem"
+ca_config: "{{ playbook_dir }}/templates/ca-config.json"
+ca: "{{ cert_dir }}/ca.pem"
+
+kube_proxy_binary: "{{ package_dir }}/kube-proxy"
+kubelet_binary: "{{ package_dir }}/kubelet"
+kubectl_binary: "{{ package_dir }}/kubectl"
+cni_tarball: "{{ package_dir }}/cni.tar.gz"
+
+api_server_binary: "{{ package_dir }}/kube-apiserver"
+controller_manager_binary: "{{ package_dir }}/kube-controller-manager"
+scheduler_binary: "{{ package_dir }}/kube-scheduler"
+
+cfssl_url: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+cfssljson_url: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+cni_url: https://storage.googleapis.com/kubernetes-release/network-plugins/cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz
+kubectl_url: https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
+kube_apiserver_url: https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-apiserver
+kubelet_url: https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubelet
+kube_controller_manager_url: https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-controller-manager
+kube_proxy_url: https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-proxy
+kube_scheduler_url: https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-scheduler
+
+
+
