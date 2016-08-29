@@ -5,4 +5,4 @@ certs/*
 _scratch/*
 *.retry
 test-setup.sh
-kubectl.sh
+/kubectl.sh
